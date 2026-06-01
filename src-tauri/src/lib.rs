@@ -22,9 +22,30 @@ pub fn run() {
                 e
             })?;
 
-            // Sync built-in markdown articles from bundled resources.
+            // Sync built-in markdown articles.
+            // 1) Production / packaged: read from Tauri resource_dir (articles/ subdir).
+            // 2) Dev fallback: if the bundled articles dir doesn't exist (running via
+            //    `cargo run` or `tauri dev`'s target/debug), fall back to the source
+            //    directory at compile time (CARGO_MANIFEST_DIR/resources/articles).
+            let mut synced = false;
             if let Ok(res_dir) = app.path().resource_dir() {
-                commands::sync_builtin_articles(&conn, &res_dir);
+                let articles_dir = res_dir.join("articles");
+                if articles_dir.exists() {
+                    commands::sync_builtin_articles(&conn, &res_dir);
+                    synced = true;
+                }
+            }
+            if !synced {
+                let dev_res_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                    .join("resources");
+                if dev_res_dir.join("articles").exists() {
+                    commands::sync_builtin_articles(&conn, &dev_res_dir);
+                } else {
+                    eprintln!(
+                        "[articles] no built-in articles directory found (checked resource_dir and {:?})",
+                        dev_res_dir
+                    );
+                }
             }
 
             app.manage(DbState {
@@ -43,6 +64,9 @@ pub fn run() {
             commands::set_kv,
             commands::get_kv,
             commands::set_always_on_top,
+            commands::add_note,
+            commands::list_notes,
+            commands::delete_note,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { Article, ArticleContent, ReadingProgress } from "../types/article";
 import type { ReaderSettings } from "../types/settings";
+import type { Note } from "../types/note";
 
 export async function listArticles(opts: {
   examType?: string | null;
@@ -58,4 +59,30 @@ export async function getKv(key: string): Promise<string | null> {
 
 export async function setAlwaysOnTop(enabled: boolean): Promise<void> {
   await invoke("set_always_on_top", { enabled });
+}
+
+export async function addNote(opts: {
+  articleId?: string | null;
+  text: string;
+  context?: string | null;
+}): Promise<Note> {
+  return await invoke<Note>("add_note", {
+    articleId: opts.articleId ?? null,
+    text: opts.text,
+    context: opts.context ?? null,
+  });
+}
+
+export async function listNotes(opts: {
+  kind?: string | null;
+  keyword?: string | null;
+}): Promise<Note[]> {
+  return await invoke<Note[]>("list_notes", {
+    kind: opts.kind ?? null,
+    keyword: opts.keyword ?? null,
+  });
+}
+
+export async function deleteNote(id: number): Promise<void> {
+  await invoke("delete_note", { id });
 }

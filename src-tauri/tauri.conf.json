@@ -30,6 +30,8 @@
     "active": true,
     "targets": "all",
     "icon": [],
-    "resources": ["resources/articles/**/*.md"]
+    "resources": {
+      "resources/articles": "articles"
+    }
   }
 }

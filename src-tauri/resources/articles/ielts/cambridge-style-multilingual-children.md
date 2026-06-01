@@ -1,0 +1,24 @@
+---
+id: ielts-style-multilingual-children
+exam: IELTS
+source: Cambridge-style practice (original)
+title: Raising Children with More Than One Language
+category: Reading
+tags:
+  - education
+  - linguistics
+  - society
+difficulty: medium
+---
+
+Across much of the world, growing up with more than one language is the ordinary condition of childhood. In India, in much of sub-Saharan Africa, in the cities of Southeast Asia, and in many migrant communities in Europe and North America, children routinely learn one language at home, another in the schoolyard, and perhaps a third in the classroom, with little fuss and no apparent ill effect. For most of the twentieth century, however, this everyday reality was treated by educators in the English-speaking world with considerable suspicion. The dominant view, supported by some of the earliest studies of bilingual children, was that exposure to two languages held a child back, leading to confusion, weaker performance at school, and, in extreme formulations, a kind of mental overload.
+
+These early studies, looking back, suffered from serious flaws. Most of them compared poor, recently arrived immigrant children—who were tested in their weaker, second language—with native-speaking children from more comfortable backgrounds. Once social class and language of testing were taken into account, the supposed disadvantage of bilingualism largely disappeared. From the 1960s onwards, a series of carefully controlled studies in Canada, conducted in the context of the country's official policy of English–French bilingualism, began to suggest that the truth was actually closer to the opposite. Bilingual children, when fairly compared with their monolingual peers, performed as well or better on a wide range of cognitive tasks.
+
+The most consistent finding has to do with what psychologists call executive function—the set of mental skills involved in switching attention between tasks, ignoring irrelevant information, and holding several ideas in mind at once. A child who routinely uses two languages must constantly select the right word from the right system and suppress the equivalent in the other language. This continuous mental exercise, the argument goes, strengthens the underlying machinery of attention, with benefits that extend well beyond language itself. Bilingual adults appear to retain some of these advantages into old age, and several studies have reported that bilingualism is associated with a slightly later onset of the symptoms of age-related cognitive decline.
+
+The picture is not, however, uniformly rosy. Bilingual children often know somewhat fewer words in each of their two languages than monolingual children know in their single one, although the combined vocabulary across both languages is usually larger. They may take a little longer to retrieve a specific word in conversation. And the advantages of bilingualism depend heavily on the conditions under which the two languages are used. A child who hears one language only from a single, occasional speaker, and uses it in only a narrow range of situations, is unlikely to develop the kind of fluent two-system competence that produces the cognitive benefits. The strongest results tend to come from environments in which both languages are used regularly, for genuine purposes, by a range of speakers.
+
+The role of the school is particularly important. In countries where the school recognises and supports the home language alongside the dominant national one, bilingual children typically do well in both. In countries where the home language is treated as an obstacle to be overcome as quickly as possible, the picture is much less positive. Children pushed to abandon their first language often lose it within a generation and may also experience disrupted schooling during the transition, since instruction in a language they barely understand is rarely effective. The international evidence suggests that the most successful programmes are those that begin with the child's stronger language, gradually introduce the second, and continue to develop both throughout the years of primary education.
+
+Parents who wish to raise a child with two languages do not, on the whole, need to follow any single recipe. Many strategies work: one parent may speak each language consistently to the child; one language may be reserved for the home and the other for the wider community; or a particular language may be used at particular times of day. What matters most is consistency, sufficient exposure, and the sense that both languages have genuine value in the child's life. Given those conditions, the old fear of bilingualism—that the child's developing mind would somehow buckle under the strain—turns out to have been almost exactly the opposite of the truth.

@@ -280,3 +280,135 @@ input:focus {
   text-align: center;
   font-size: 13px;
 }
+
+/* --- Selection popover --- */
+.selection-popover {
+  position: fixed;
+  transform: translate(-50%, -100%);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  z-index: 50;
+  font-size: 12px;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.selection-popover button {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.selection-popover .sep {
+  width: 1px;
+  height: 14px;
+  background: var(--border);
+  margin: 0 2px;
+}
+
+/* --- Toast --- */
+.toast {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 14px;
+  font-size: 12px;
+  z-index: 60;
+  pointer-events: none;
+  animation: toast-fade 1.4s ease forwards;
+}
+
+@keyframes toast-fade {
+  0% { opacity: 0; transform: translate(-50%, 6px); }
+  10% { opacity: 1; transform: translate(-50%, 0); }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* --- Notes panel --- */
+.notes-list {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 4px;
+}
+
+.note-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.note-text {
+  font-size: 14px;
+  font-weight: 500;
+  user-select: text;
+  word-break: break-word;
+}
+
+.note-context {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  user-select: text;
+  word-break: break-word;
+}
+
+.note-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.note-source {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--muted);
+}
+
+.tag-word {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tag-phrase {
+  border-color: #e0b400;
+  color: #b08600;
+}
+
+.link-btn {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--muted);
+}
+
+.link-btn:hover {
+  color: var(--text);
+}
+
+.link-btn.danger:hover {
+  color: #d44;
+}

@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import ArticleList from "./components/ArticleList";
 import Reader from "./components/Reader";
 import SettingsPanel from "./components/SettingsPanel";
+import NotesPanel from "./components/NotesPanel";
 import {
   getSettings,
   updateSettings,
@@ -27,6 +28,7 @@ export default function App() {
   );
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   // Load settings + last opened article on startup.
@@ -103,6 +105,13 @@ export default function App() {
             <div className="crumb">Mini Reader</div>
             <button
               className="icon-btn"
+              onClick={() => setShowNotes(true)}
+              title="Notebook"
+            >
+              ❏
+            </button>
+            <button
+              className="icon-btn"
               onClick={() => setShowSettings(true)}
               title="Settings"
             >
@@ -153,6 +162,8 @@ export default function App() {
           onClose={() => setShowSettings(false)}
         />
       )}
+
+      {showNotes && <NotesPanel onClose={() => setShowNotes(false)} />}
     </div>
   );
 }

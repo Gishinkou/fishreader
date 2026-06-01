@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/components/articlelist.tsx","./src/components/reader.tsx","./src/components/settingspanel.tsx","./src/services/api.ts","./src/types/article.ts","./src/types/settings.ts"],"version":"5.6.3"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/articlelist.tsx","./src/components/notespanel.tsx","./src/components/reader.tsx","./src/components/selectionpopover.tsx","./src/components/settingspanel.tsx","./src/services/api.ts","./src/types/article.ts","./src/types/note.ts","./src/types/settings.ts"],"version":"5.6.3"}

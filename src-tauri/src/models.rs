@@ -64,3 +64,19 @@ pub struct ReadingProgress {
     #[serde(rename = "readCount")]
     pub read_count: i64,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Note {
+    pub id: i64,
+    #[serde(rename = "articleId")]
+    pub article_id: Option<String>,
+    /// "word" or "phrase"
+    pub kind: String,
+    pub text: String,
+    pub context: Option<String>,
+    #[serde(rename = "createdAt")]
+    pub created_at: i64,
+    /// Optional joined article title for display.
+    #[serde(rename = "articleTitle")]
+    pub article_title: Option<String>,
+}

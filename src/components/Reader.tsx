@@ -2,11 +2,13 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import type { ArticleContent } from "../types/article";
 import {
+  addNote,
   getArticleContent,
   getReadingProgress,
   saveReadingProgress,
   toggleFavorite,
 } from "../services/api";
+import SelectionPopover from "./SelectionPopover";
 
 interface Props {
   articleId: string;
@@ -30,6 +32,14 @@ export default function Reader({
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const saveTimerRef = useRef<number | null>(null);
   const restoredRef = useRef(false);
+  const [popover, setPopover] = useState<{
+    x: number;
+    y: number;
+    text: string;
+    context: string;
+  } | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -102,6 +112,91 @@ export default function Reader({
     };
   }, [articleId]);
 
+  // Selection -> floating popover.
+  const updatePopoverFromSelection = useCallback(() => {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || sel.rangeCount === 0) {
+      setPopover(null);
+      return;
+    }
+    const text = sel.toString().trim();
+    if (!text) {
+      setPopover(null);
+      return;
+    }
+    // Only react to selections inside the reader-scroll area.
+    const scrollEl = scrollRef.current;
+    const anchor = sel.anchorNode;
+    if (!scrollEl || !anchor || !scrollEl.contains(anchor)) {
+      return;
+    }
+    const range = sel.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) {
+      setPopover(null);
+      return;
+    }
+    // Try to capture surrounding sentence/paragraph as context.
+    let context = "";
+    const node = range.startContainer;
+    const blockEl =
+      (node.nodeType === Node.ELEMENT_NODE
+        ? (node as HTMLElement)
+        : node.parentElement)?.closest("p, li, h1, h2, h3, blockquote") ?? null;
+    if (blockEl) context = blockEl.textContent?.trim() ?? "";
+
+    setPopover({
+      x: rect.left + rect.width / 2,
+      y: rect.top - 8,
+      text,
+      context,
+    });
+  }, []);
+
+  useEffect(() => {
+    const onMouseUp = () => {
+      // Defer so the selection has settled.
+      window.setTimeout(updatePopoverFromSelection, 0);
+    };
+    const onSelectionChange = () => {
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed) setPopover(null);
+    };
+    document.addEventListener("mouseup", onMouseUp);
+    document.addEventListener("selectionchange", onSelectionChange);
+    return () => {
+      document.removeEventListener("mouseup", onMouseUp);
+      document.removeEventListener("selectionchange", onSelectionChange);
+    };
+  }, [updatePopoverFromSelection]);
+
+  const showToast = useCallback((msg: string) => {
+    setToast(msg);
+    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = window.setTimeout(() => setToast(null), 1400);
+  }, []);
+
+  const handleCopy = useCallback(() => {
+    if (!popover) return;
+    navigator.clipboard
+      .writeText(popover.text)
+      .then(() => showToast("Copied"))
+      .catch(() => showToast("Copy failed"));
+  }, [popover, showToast]);
+
+  const handleSave = useCallback(() => {
+    if (!popover) return;
+    addNote({
+      articleId,
+      text: popover.text,
+      context: popover.context || null,
+    })
+      .then((n) =>
+        showToast(n.kind === "word" ? "Saved (word)" : "Saved (phrase)"),
+      )
+      .catch(() => showToast("Save failed"));
+  }, [popover, articleId, showToast]);
+
   const onToggleFav = async () => {
     try {
       const newState = await toggleFavorite(articleId);
@@ -151,6 +246,16 @@ export default function Reader({
       <div className="reader-footer">
         <div className="pct">{Math.round(progress)}%</div>
       </div>
+      {popover && (
+        <SelectionPopover
+          x={popover.x}
+          y={popover.y}
+          onCopy={handleCopy}
+          onSave={handleSave}
+          onDismiss={() => setPopover(null)}
+        />
+      )}
+      {toast && <div className="toast">{toast}</div>}
     </div>
   );
 }

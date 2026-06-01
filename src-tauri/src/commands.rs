@@ -1,6 +1,6 @@
 use crate::articles;
 use crate::db::{now_ts, DbState};
-use crate::models::{Article, ArticleContent, ReaderSettings, ReadingProgress};
+use crate::models::{Article, ArticleContent, Note, ReaderSettings, ReadingProgress};
 use rusqlite::{params, OptionalExtension};
 use std::path::PathBuf;
 use tauri::State;
@@ -293,4 +293,116 @@ pub fn get_kv(key: String, state: State<'_, DbState>) -> Result<Option<String>, 
 #[tauri::command]
 pub fn set_always_on_top(enabled: bool, window: tauri::Window) -> Result<(), String> {
     window.set_always_on_top(enabled).map_err(map_err)
+}
+
+/// Classify selected text into "word" (single token) or "phrase" (multi-token).
+fn classify_kind(text: &str) -> &'static str {
+    let trimmed = text.trim();
+    // Count whitespace-separated tokens. Treat hyphenated/apostrophe forms as one word.
+    let token_count = trimmed.split_whitespace().count();
+    if token_count <= 1 { "word" } else { "phrase" }
+}
+
+#[tauri::command]
+pub fn add_note(
+    article_id: Option<String>,
+    text: String,
+    context: Option<String>,
+    state: State<'_, DbState>,
+) -> Result<Note, String> {
+    let trimmed = text.trim().to_string();
+    if trimmed.is_empty() {
+        return Err("empty selection".into());
+    }
+    let kind = classify_kind(&trimmed).to_string();
+    let conn = state.conn.lock().map_err(|e| e.to_string())?;
+    let now = now_ts();
+    conn.execute(
+        "INSERT INTO notes (article_id, kind, text, context, created_at)
+         VALUES (?1, ?2, ?3, ?4, ?5)",
+        params![article_id, kind, trimmed, context, now],
+    )
+    .map_err(map_err)?;
+    let id = conn.last_insert_rowid();
+
+    // Resolve article title for display, if any.
+    let article_title: Option<String> = if let Some(ref aid) = article_id {
+        conn.query_row(
+            "SELECT title FROM articles WHERE id = ?1",
+            params![aid],
+            |row| row.get(0),
+      )
+        .optional()
+        .map_err(map_err)?
+    } else {
+        None
+    };
+
+    Ok(Note {
+        id,
+        article_id,
+        kind,
+        text: trimmed,
+        context,
+        created_at: now,
+        article_title,
+    })
+}
+
+#[tauri::command]
+pub fn list_notes(
+    kind: Option<String>,
+    keyword: Option<String>,
+    state: State<'_, DbState>,
+) -> Result<Vec<Note>, String> {
+    let conn = state.conn.lock().map_err(|e| e.to_string())?;
+    let mut sql = String::from(
+        "SELECT n.id, n.article_id, n.kind, n.text, n.context, n.created_at, a.title
+         FROM notes n
+         LEFT JOIN articles a ON a.id = n.article_id
+         WHERE 1=1",
+    );
+    let mut args: Vec<String> = Vec::new();
+    if let Some(k) = kind.filter(|s| !s.is_empty()) {
+        sql.push_str(" AND n.kind = ?");
+        args.push(k);
+    }
+    if let Some(kw) = keyword.filter(|s| !s.trim().is_empty()) {
+        sql.push_str(" AND (n.text LIKE ? OR n.context LIKE ?)");
+        let pat = format!("%{}%", kw);
+        args.push(pat.clone());
+        args.push(pat);
+    }
+    sql.push_str(" ORDER BY n.created_at DESC");
+
+    let mut stmt = conn.prepare(&sql).map_err(map_err)?;
+    let params_dyn: Vec<&dyn rusqlite::ToSql> =
+        args.iter().map(|s| s as &dyn rusqlite::ToSql).collect();
+    let rows = stmt
+        .query_map(params_dyn.as_slice(), |row| {
+            Ok(Note {
+                id: row.get(0)?,
+                article_id: row.get(1).ok(),
+                kind: row.get(2)?,
+                text: row.get(3)?,
+                context: row.get(4).ok(),
+                created_at: row.get(5)?,
+                article_title: row.get(6).ok(),
+            })
+        })
+        .map_err(map_err)?;
+
+    let mut out = Vec::new();
+    for r in rows {
+        out.push(r.map_err(map_err)?);
+    }
+    Ok(out)
+}
+
+#[tauri::command]
+pub fn delete_note(id: i64, state: State<'_, DbState>) -> Result<(), String> {
+    let conn = state.conn.lock().map_err(|e| e.to_string())?;
+    conn.execute("DELETE FROM notes WHERE id = ?1", params![id])
+        .map_err(map_err)?;
+    Ok(())
 }

@@ -48,6 +48,19 @@ fn apply_migrations(conn: &Connection) -> Result<()> {
             key TEXT PRIMARY KEY,
             value TEXT NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS notes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            article_id TEXT,
+            kind TEXT NOT NULL,            -- 'word' | 'phrase'
+            text TEXT NOT NULL,
+            context TEXT,                  -- surrounding sentence/paragraph (optional)
+            created_at INTEGER NOT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_notes_kind ON notes(kind);
+        CREATE INDEX IF NOT EXISTS idx_notes_article ON notes(article_id);
+        CREATE INDEX IF NOT EXISTS idx_notes_created ON notes(created_at DESC);
         "#,
     )?;
     Ok(())
